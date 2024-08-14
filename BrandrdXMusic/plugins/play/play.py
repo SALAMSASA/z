@@ -25,15 +25,19 @@ from BrandrdXMusic.utils.stream.stream import stream
 from config import BANNED_USERS, lyrical
 
 
-@app.on_message(command(["فيديو","شغل","تشغيل"])
-    & filters.group
-    & ~BANNED_USERS
-)
-@app.on_message(filters.command(["play","vplay","cplay","cvplay",
+@app.on_message(
+    filters.command(
+        [
+            "play",
+            "vplay",
+            "cplay",
+            "cvplay",
             "playforce",
             "vplayforce",
             "cplayforce",
-            "cvplayforce",])
+            "cvplayforce",
+        ]
+    )
     & filters.group
     & ~BANNED_USERS
 )
