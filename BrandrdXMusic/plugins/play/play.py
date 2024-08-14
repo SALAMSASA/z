@@ -24,20 +24,34 @@ from BrandrdXMusic.utils.logger import play_logs
 from BrandrdXMusic.utils.stream.stream import stream
 from config import BANNED_USERS, lyrical
 
-
-@app.on_message(
-    filters.command(
+force_btn = InlineKeyboardMarkup(
+    [
         [
-            "play",
-            "vplay",
-            "cplay",
-            "cvplay",
+            InlineKeyboardButton(   
+              text=f"اضغط للأشتراك .", url=f"t.me/A1DIIU",)                        
+        ],        
+    ]
+)
+async def check_is_joined(message):    
+    try:
+        userid = message.from_user.id
+        user_name = message.from_user.first_name
+        status = await app.get_chat_member("A1DIIU", userid)
+        return True
+    except Exception:
+        await message.reply_text(f'❤️‍🩹┇عزيزي: {message.from_user.mention}\n🫀┇أشتࢪك في قناة البوت أولاً.\n🚧┇قناة البوت: @A1DIIU 🫂',reply_markup=force_btn,disable_web_page_preview=False)
+        return False
+
+
+@app.on_message(command(["فيديو","شغل","تشغيل"])
+    & filters.group
+    & ~BANNED_USERS
+)
+@app.on_message(filters.command(["play","vplay","cplay","cvplay",
             "playforce",
             "vplayforce",
             "cplayforce",
-            "cvplayforce",
-        ]
-    )
+            "cvplayforce",])
     & filters.group
     & ~BANNED_USERS
 )
@@ -53,6 +67,8 @@ async def play_commnd(
     url,
     fplay,
 ):
+    if not await check_is_joined(message):
+        return
     mystic = await message.reply_text(
         _["play_2"].format(channel) if channel else _["play_1"]
     )
@@ -288,7 +304,7 @@ async def play_commnd(
             return await mystic.delete()
         else:
             try:
-                await Hotty.stream_call(url)
+                await Anony.stream_call(url)
             except NoActiveGroupCall:
                 await mystic.edit_text(_["black_9"])
                 return await app.send_message(
@@ -502,7 +518,7 @@ async def play_music(client, CallbackQuery, _):
 
 
 @app.on_callback_query(filters.regex("AnonymousAdmin") & ~BANNED_USERS)
-async def piyush_check(client, CallbackQuery):
+async def anonymous_check(client, CallbackQuery):
     try:
         await CallbackQuery.answer(
             "» ʀᴇᴠᴇʀᴛ ʙᴀᴄᴋ ᴛᴏ ᴜsᴇʀ ᴀᴄᴄᴏᴜɴᴛ :\n\nᴏᴘᴇɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ sᴇᴛᴛɪɴɢs.\n-> ᴀᴅᴍɪɴɪsᴛʀᴀᴛᴏʀs\n-> ᴄʟɪᴄᴋ ᴏɴ ʏᴏᴜʀ ɴᴀᴍᴇ\n-> ᴜɴᴄʜᴇᴄᴋ ᴀɴᴏɴʏᴍᴏᴜs ᴀᴅᴍɪɴ ᴘᴇʀᴍɪssɪᴏɴs.",
@@ -512,7 +528,7 @@ async def piyush_check(client, CallbackQuery):
         pass
 
 
-@app.on_callback_query(filters.regex("HottyPlaylists") & ~BANNED_USERS)
+@app.on_callback_query(filters.regex("AnonyPlaylists") & ~BANNED_USERS)
 @languageCB
 async def play_playlists_command(client, CallbackQuery, _):
     callback_data = CallbackQuery.data.strip()
@@ -660,4 +676,4 @@ async def slider_queries(client, CallbackQuery, _):
         )
         return await CallbackQuery.edit_message_media(
             media=med, reply_markup=InlineKeyboardMarkup(buttons)
-)
+        )
